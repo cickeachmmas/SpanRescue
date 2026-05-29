@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- Wi-Fi Direct Permissions — ضرورية 100%      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+
+    <!-- Wi-Fi Direct يحتاج Location لأسباب أمنية في Android -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Android 13+ — Nearby Devices -->
+    <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES"
+        android:usesPermissionFlags="neverForLocation" />
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- GPS Permissions                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <!-- Required for starting a foreground service that accesses location -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- Audio Permissions                           -->
+    <!-- ═══════════════════════════════════════════ -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- Background Service — يبقى التطبيق حياً      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- Storage — للخرائط Offline والملفات الصوتية  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- Notifications                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Wi-Fi Direct Hardware Feature -->
+    <uses-feature
+        android:name="android.hardware.wifi.direct"
+        android:required="true" />
+
+    <application
+        android:label="SPAN Rescue"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher"
+        android:theme="@style/LaunchTheme"
+        android:hardwareAccelerated="true"
+        android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true">
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- Main Activity                           -->
+        <!-- ═══════════════════════════════════════ -->
+        <activity
+            android:name="com.spanrescue.tactical.MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- Mesh Background Service                 -->
+        <!-- يبقى يعمل حتى لو أغلق التطبيق         -->
+        <!-- ═══════════════════════════════════════ -->
+        <service
+            android:name="com.spanrescue.tactical.MeshForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice|location" />
+
+        <!-- Boot Receiver — يبدأ عند تشغيل الهاتف -->
+        <receiver
+            android:name="com.spanrescue.tactical.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Wi-Fi Direct Broadcast Receiver -->
+        <receiver
+            android:name="com.spanrescue.tactical.WiFiDirectBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.net.wifi.p2p.STATE_CHANGED" />
+                <action android:name="android.net.wifi.p2p.PEERS_CHANGED" />
+                <action android:name="android.net.wifi.p2p.CONNECTION_STATE_CHANGE" />
+                <action android:name="android.net.wifi.p2p.THIS_DEVICE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Flutter Local Notifications -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+
+    </application>
+</manifest>
